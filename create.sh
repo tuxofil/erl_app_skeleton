@@ -13,11 +13,11 @@ set -e
 APP=`basename "$1"`
 APP_UPPER=`echo "$APP" | tr a-z A-Z`
 cp --recursive -- skeleton "$1"
-find "$1" -type f -exec sed --in-place "s/skeleton/$APP/" '{}' ';'
-find "$1" -type f -exec sed --in-place "s/SKELETON/$APP_UPPER/" '{}' ';'
+find "$1" -type f -exec sed --in-place "s/skeleton/$APP/g" '{}' ';'
+find "$1" -type f -exec sed --in-place "s/SKELETON/$APP_UPPER/g" '{}' ';'
 cd "$1"
 for i in include/* src/*; do
-    mv --force -- "$i" `echo "$i" | sed "s/skeleton/$APP/"`
+    mv --force -- "$i" `echo "$i" | sed "s/skeleton/$APP/g"`
 done
 echo done
 
