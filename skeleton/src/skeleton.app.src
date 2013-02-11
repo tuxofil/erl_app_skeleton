@@ -1,0 +1,23 @@
+%%% @author Aleksey Morarash <aleksey.morarash@gmail.com>
+%%% @since 11 Feb 2013
+%%% @copyright 2013
+%%% @doc skeleton application resource file
+
+{application, skeleton,
+ [
+  {description,  "SKELETON"},
+  {vsn,          "{{VERSION}}"},
+  {modules,      [skeleton,
+                  skeleton_app,
+                  skeleton_sup,
+                  skeleton_srv,
+                  skeleton_util
+                 ]},
+  {registered,   [skeleton_sup,
+                  skeleton_srv
+                 ]},
+  {applications, []},
+  {env,          []},
+  {mod,          {skeleton_app, []}}
+ ]}.
+

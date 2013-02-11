@@ -1,0 +1,24 @@
+@author Aleksey Morarash <aleksey.morarash@gmail.com>
+@copyright 2013
+@version {{VERSION}}
+@title No description.
+@doc == Contents ==
+
+<ol>
+ <li>{@section Summary}</li>
+ <li>{@section Building}</li>
+ <li>{@section Configuration}</li>
+</ol>
+
+== Summary ==
+
+Skeleton - no description.
+
+== Building ==
+
+Chdir to top of sources tree and type:
+
+<code>$ make</code>
+
+== Configuration ==
+

@@ -1,0 +1,13 @@
+ebin
+*~
+.#*
+*.html
+*.png
+*.css
+edoc-info
+overview.edoc
+erl_crash.dump
+*.log
+*.plt
+Emakefile
+.dialyzer_plt
