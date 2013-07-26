@@ -1,22 +1,34 @@
 APP=skeleton
 VERSION=`cat version`
 
-.PHONY: all compile doc test eunit dialyze all-tests clean dist-clean Emakefile figures
+.PHONY: all compile doc test eunit dialyze all-tests clean dist-clean figures
 
 all: compile doc
 
-compile: ebin/$(APP).app Emakefile
-	erl -noinput -eval 'up_to_date = make:all()' -s erlang halt
+COPTS = {outdir, ebin}, {i, \"include\"}, warn_unused_function, \
+ warn_bif_clash, warn_deprecated_function, warn_obsolete_guard, verbose, \
+ warn_shadow_vars, warn_export_vars, warn_unused_records, warn_unused_import
+
+ifdef DEBUG
+COPTS := $(COPTS), debug_info
+endif
+
+ifdef TEST
+COPTS := $(COPTS), {d, 'TEST'}
+endif
+
+ifdef STRICT
+COPTS := $(COPTS), warnings_as_errors
+endif
+
+compile: ebin/$(APP).app
+	echo '[$(FIRST_MODS)"src/*"].' > Emakefile
+	erl -noinput -pa ebin -eval "up_to_date=make:all([$(COPTS)]),halt()"
 
 doc: doc/overview.edoc figures
-	erl -noinput -eval \
-		'edoc:application($(APP), ".", [{application, $(APP)}])' \
-		-s erlang halt
+	erl -noinput -eval "edoc:application($(APP),\".\",[]),halt()"
 
-FIGSSRC=$(wildcard doc/*.dot)
-FIGS=$(patsubst doc/%.dot, doc/%.png, $(FIGSSRC))
-
-figures: $(FIGS)
+figures: $(patsubst doc/%.dot, doc/%.png, $(wildcard doc/*.dot))
 
 doc/%.png: doc/%.dot
 	dot -T png $< > $@
@@ -25,18 +37,11 @@ test:
 	$(MAKE) -C test
 
 eunit:
+	$(MAKE) clean TEST=y compile
 	erl -noinput -pa ebin \
-		-eval 'ok = eunit:test({application, $(APP)}, [verbose])' \
-		-s erlang halt
+		-eval 'ok=eunit:test({application,$(APP)},[verbose]),halt()'
 
-all-tests:
-	$(MAKE) clean
-	$(MAKE) TEST=y compile
-	$(MAKE) eunit
-	$(MAKE) test
-	$(MAKE) clean
-	$(MAKE) DEBUG=y compile
-	$(MAKE) dialyze
+all-tests: eunit test dialyze
 
 clean:
 	rm --force -- doc/*.html doc/*.css doc/*.png doc/edoc-info \
@@ -47,27 +52,17 @@ dist-clean: clean
 	rm --force --recursive -- erl_crash.dump ebin
 	find . -type f -name '*~' -print -delete
 
-ebin/$(APP).app: src/$(APP).app.src version
+ebin/$(APP).app: src/$(APP).app.in version
 	mkdir --parents ebin
 	sed "s/{{VERSION}}/$(VERSION)/" $< > $@
 
-doc/overview.edoc: doc/overview.edoc.src version
+doc/overview.edoc: doc/overview.edoc.in version
 	sed "s/{{VERSION}}/$(VERSION)/" $< > $@
-
-ifdef DEBUG
-EXTRA_OPTS:=debug_info,
-endif
-
-ifdef TEST
-EXTRA_OPTS:=$(EXTRA_OPTS) {d,'TEST', true},
-endif
-
-Emakefile: Emakefile.src
-	sed "s/{{EXTRA_OPTS}}/$(EXTRA_OPTS)/" $< > $@
 
 PLT=.dialyzer_plt
 
 dialyze: $(PLT)
+	$(MAKE) clean DEBUG=y compile
 	dialyzer --plt $< -r . \
 		-Wunmatched_returns -Werror_handling -Wrace_conditions
 	dialyzer --src --plt $< -r . \
