@@ -16,8 +16,13 @@ cp --recursive -- skeleton "$1"
 find "$1" -type f -exec sed --in-place "s/skeleton/$APP/g" '{}' ';'
 find "$1" -type f -exec sed --in-place "s/SKELETON/$APP_UPPER/g" '{}' ';'
 cd "$1"
+DATE=`LC_ALL=C date '+%d %b %Y'`
+YEAR=`date '+%Y'`
 for i in include/* src/*; do
-    mv --force -- "$i" `echo "$i" | sed "s/skeleton/$APP/g"`
+    DEST_FILENAME=`echo "$i" | sed "s/skeleton/$APP/g"`
+    mv --force -- "$i" "$DEST_FILENAME"
+    sed --in-place "s/{{DATE}}/$DATE/g" "$DEST_FILENAME"
+    sed --in-place "s/{{YEAR}}/$YEAR/g" "$DEST_FILENAME"
 done
 echo done
 

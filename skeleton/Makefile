@@ -1,13 +1,15 @@
-APP=skeleton
-VERSION=`cat version`
+APP = skeleton
+VERSION = $(shell cat version)
 
-.PHONY: all compile doc test eunit dialyze all-tests clean dist-clean figures
+.PHONY: all compile doc test eunit dialyze all-tests clean dist-clean figures \
+        doc-install install
 
 all: compile doc
 
 COPTS = {outdir, ebin}, {i, \"include\"}, warn_unused_function, \
  warn_bif_clash, warn_deprecated_function, warn_obsolete_guard, verbose, \
- warn_shadow_vars, warn_export_vars, warn_unused_records, warn_unused_import
+ warn_shadow_vars, warn_export_vars, warn_unused_records, warn_unused_import, \
+ warn_export_all
 
 ifdef DEBUG
 COPTS := $(COPTS), debug_info
@@ -43,14 +45,28 @@ eunit:
 
 all-tests: eunit test dialyze
 
+doc-install: doc
+	install --mode=755 --directory $(DESTDIR)/$(APP)
+	install --mode=644 doc/*.html doc/*.css doc/*.png $(DESTDIR)/$(APP)
+
+install: compile
+	install --mode=755 --directory $(DESTDIR)/$(APP)-$(VERSION)/ebin
+	install --mode=644 ebin/*.beam ebin/*.app $(DESTDIR)/$(APP)-$(VERSION)/ebin
+	install --mode=755 --directory $(DESTDIR)/$(APP)-$(VERSION)/include
+	install --mode=644 include/*.hrl $(DESTDIR)/$(APP)-$(VERSION)/include
+	if [ -d priv ]; then \
+	    install --mode=755 --directory $(DESTDIR)/$(APP)-$(VERSION)/priv; \
+	    install --mode=644 priv/* $(DESTDIR)/$(APP)-$(VERSION)/priv; \
+	fi
+
 clean:
 	rm --force -- doc/*.html doc/*.css doc/*.png doc/edoc-info \
 		ebin/*.beam Emakefile doc/overview.edoc ebin/$(APP).app
 	$(MAKE) -C test clean
 
 dist-clean: clean
-	rm --force --recursive -- erl_crash.dump ebin
-	find . -type f -name '*~' -print -delete
+	rm --force --recursive -- ebin
+	find . -type f -a '(' -name '*~' -o -name erl_crash.dump ')' -delete
 
 ebin/$(APP).app: src/$(APP).app.in version
 	mkdir --parents ebin
@@ -59,7 +75,7 @@ ebin/$(APP).app: src/$(APP).app.in version
 doc/overview.edoc: doc/overview.edoc.in version
 	sed "s/{{VERSION}}/$(VERSION)/" $< > $@
 
-PLT=.dialyzer_plt
+PLT = .dialyzer_plt
 
 dialyze: $(PLT)
 	$(MAKE) clean DEBUG=y compile

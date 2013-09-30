@@ -3,7 +3,7 @@
 
 %% @author Aleksey Morarash <aleksey.morarash@gmail.com>
 %% @copyright Aleksey Morarash <aleksey.morarash@gmail.com>
-%% @since 11 Feb 2013, skeleton.
+%% @since {{DATE}}, skeleton.
 
 -module(skeleton_util).
 

@@ -3,7 +3,7 @@
 
 %% @author Aleksey Morarash <aleksey.morarash@gmail.com>
 %% @copyright Aleksey Morarash <aleksey.morarash@gmail.com>
-%% @since 11 Feb 2013, skeleton.
+%% @since {{DATE}}, skeleton.
 
 -module(skeleton).
 
@@ -28,12 +28,14 @@
 %% @doc Start application.
 %% @spec start() -> ok | {error, Reason}
 %%     Reason = term()
+-spec start() -> ok | {error, Reason :: any()}.
 start() ->
     application:start(?MODULE).
 
 %% @doc Stop application.
 %% @spec stop() -> ok | {error, Reason}
 %%     Reason = term()
+-spec stop() -> ok | {error, Reason :: any()}.
 stop() ->
     application:stop(?MODULE).
 

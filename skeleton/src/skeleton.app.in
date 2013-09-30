@@ -1,6 +1,6 @@
 %%% @author Aleksey Morarash <aleksey.morarash@gmail.com>
-%%% @since 11 Feb 2013
-%%% @copyright 2013
+%%% @since {{DATE}}
+%%% @copyright {{YEAR}}
 %%% @doc skeleton application resource file
 
 {application, skeleton,

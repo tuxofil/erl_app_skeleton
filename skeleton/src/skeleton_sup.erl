@@ -3,7 +3,7 @@
 
 %% @author Aleksey Morarash <aleksey.morarash@gmail.com>
 %% @copyright Aleksey Morarash <aleksey.morarash@gmail.com>
-%% @since 11 Feb 2013, skeleton.
+%% @since {{DATE}}, skeleton.
 
 -module(skeleton_sup).
 
@@ -25,6 +25,7 @@
 %% @spec start_link() -> {ok, Pid} | ignore | {error, Reason}
 %%     Pid = pid(),
 %%     Reason = term()
+-spec start_link() -> {ok, pid()} | ignore | {error, Reason :: any()}.
 start_link() ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, _Args = undefined).
 
@@ -33,6 +34,12 @@ start_link() ->
 %% ----------------------------------------------------------------------
 
 %% @hidden
+-spec init(Args :: any()) ->
+                  {ok,
+                   {{RestartStrategy :: supervisor:strategy(),
+                     MaxR :: non_neg_integer(),
+                     MaxT :: non_neg_integer()},
+                    [ChildSpec :: supervisor:child_spec()]}}.
 init(_Args) ->
     {ok,
      {{one_for_one, 5, 1},
